@@ -2,8 +2,6 @@ package com.pixelcarrot.broccoli.feature.spotify.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pixelcarrot.broccoli.domain.model.Album
-import com.pixelcarrot.broccoli.domain.model.Song
 import com.pixelcarrot.broccoli.domain.usecase.GetAllAlbumsUseCase
 import com.pixelcarrot.broccoli.domain.usecase.GetAllSongsUseCase
 import com.pixelcarrot.broccoli.domain.usecase.GetAllStoredSongsUseCase
@@ -22,41 +20,46 @@ class SpotifyViewModel @Inject constructor(
     private val getSongsByAlbumIdUseCase: GetSongsByAlbumIdUseCase,
 ) : ViewModel() {
 
-    private val _songsState = MutableStateFlow<List<Song>>(emptyList())
-    val songsState: StateFlow<List<Song>?> get() = _songsState
+    private val _steps = MutableStateFlow<List<String>>(emptyList())
+    val steps: StateFlow<List<String>> get() = _steps
 
-    private val _albumsState = MutableStateFlow<List<Album>>(emptyList())
-    val albumsState: StateFlow<List<Album>?> get() = _albumsState
+    private fun proceedToNextStep(stepDescription: String) {
+        _steps.value = _steps.value.toList() + stepDescription
+    }
 
-    private val _songsByAlbumState = MutableStateFlow<List<Song>>(emptyList())
-    val songsByAlbumState: StateFlow<List<Song>?> get() = _songsByAlbumState
-
-
-    fun loadAllSongs() {
+    fun fetchAllSongs() {
         viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
             val songs = getAllSongsUseCase()
-            _songsState.value = songs
+            val endTime = System.currentTimeMillis()
+            proceedToNextStep("Step 1: Fetched ${songs.size} songs from API in ${endTime - startTime} ms")
         }
     }
 
-    fun loadAllAlbums() {
+    fun fetchAllStoredSongs() {
         viewModelScope.launch {
-            val albums = getAllAlbumsUseCase()
-            _albumsState.value = albums
-        }
-    }
-
-    fun loadStoredSongs() {
-        viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
             val songs = getAllStoredSongsUseCase()
-            _songsState.value = songs
+            val endTime = System.currentTimeMillis()
+            proceedToNextStep("Step 2: Fetched ${songs.size} stored songs in ${endTime - startTime} ms")
         }
     }
 
-    fun loadSongsByAlbumId(albumId: String) {
+    fun fetchAllStoredAlbums() {
         viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
+            val albums = getAllAlbumsUseCase()
+            val endTime = System.currentTimeMillis()
+            proceedToNextStep("Step 3: Fetched ${albums.size} stored albums in ${endTime - startTime} ms")
+        }
+    }
+
+    fun fetchSongsByAlbumId(albumId: String) {
+        viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
             val songs = getSongsByAlbumIdUseCase(albumId)
-            _songsByAlbumState.value = songs
+            val endTime = System.currentTimeMillis()
+            proceedToNextStep("Step 4: Fetched ${songs.size} songs for album ID '$albumId' in ${endTime - startTime} ms")
         }
     }
 
