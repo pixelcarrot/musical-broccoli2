@@ -1,6 +1,10 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    kotlin("kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -9,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.pixelcarrot.broccoli"
-        minSdk = 26
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -30,26 +34,37 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        // https://developer.android.com/build/releases/past-releases/agp-8-3-0-release-notes
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+        // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+        kotlinCompilerExtensionVersion = "1.4.2" // compatible with kotlin 1.8.10
     }
 }
 
 dependencies {
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    implementation(libs.kotlinx.coroutines.android)
+
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+    implementation(libs.gson)
+    implementation(libs.mockwebserver)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
