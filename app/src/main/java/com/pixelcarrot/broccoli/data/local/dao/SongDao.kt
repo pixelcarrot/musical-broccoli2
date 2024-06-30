@@ -13,4 +13,7 @@ interface SongDao {
 
     @Query("SELECT * FROM songs")
     suspend fun getAllSongs(): List<SongEntity>
+
+    @Query("SELECT * FROM songs WHERE track_album_id = :albumId")
+    suspend fun getSongsByAlbumId(albumId: String): List<SongEntity>
 }

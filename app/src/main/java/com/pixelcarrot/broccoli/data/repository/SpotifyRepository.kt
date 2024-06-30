@@ -7,6 +7,7 @@ import com.pixelcarrot.broccoli.data.mapper.AlbumMapper
 import com.pixelcarrot.broccoli.data.mapper.SongMapper
 import com.pixelcarrot.broccoli.data.remote.api.SpotifyApi
 import com.pixelcarrot.broccoli.data.remote.response.SongResponse
+import com.pixelcarrot.broccoli.domain.model.Album
 import com.pixelcarrot.broccoli.domain.model.Song
 import javax.inject.Inject
 
@@ -39,4 +40,20 @@ class SpotifyRepository @Inject constructor(
 
         return songEntities.map { SongMapper.fromEntityToModel(it) }
     }
+
+    suspend fun getAllAlbums(): List<Album> {
+        return albumDao.getAllAlbums()
+            .map { AlbumMapper.fromEntityToModel(it) }
+    }
+
+    suspend fun getAllStoredSongs(): List<Song> {
+        return songDao.getAllSongs()
+            .map { SongMapper.fromEntityToModel(it) }
+    }
+
+    suspend fun getSongsByAlbumId(albumId: String): List<Song> {
+        return songDao.getSongsByAlbumId(albumId)
+            .map { SongMapper.fromEntityToModel(it) }
+    }
+
 }
